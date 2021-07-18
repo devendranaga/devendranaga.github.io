@@ -5,7 +5,7 @@ date:   2021-07-18 07:04:00
 categories: cryptography
 ---
 
-Recently i have come cross the Needham-Schroeder protocol. So thought of implementing it in C++ following the public key version of the protocol over the weekend.
+Recently i have come cross the Needham-Schroeder protocol. So thought of implementing it in C++ following the public key version of the protocol over this weekend.
 
 The protocol details can be found from wikipedia [here](https://en.wikipedia.org/wiki/Needham%E2%80%93Schroeder_protocol).
 
