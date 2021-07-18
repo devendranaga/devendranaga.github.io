@@ -62,6 +62,11 @@ Below is the diagram that shows the sequence of steps involved.
 
 The C++ implementation of the protocol below simulates A, B and S as functions within a single program. In realitiy they are tasks or services in each machine, device running and communicating over the insecured channel.
 
+For Public key implementations, we use RSA for signing and encryption. We sign with Private key and verify with Public keys. We encrypt with Public key and decrypt with Private Key. We use RSA key length of 2048 for learning purposes. For realworld uses 3072 key lengths are better.
+
+HKDF derivation of the final keys is not shown in the implementation.
+
+
 
 An example output of the implementation is as follow:
 
