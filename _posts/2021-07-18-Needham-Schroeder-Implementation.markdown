@@ -46,8 +46,8 @@ Since A and B now know each of their nonces, they can create session keys with K
 
 For example a KDF  can be realised as following:
 
-1. input : ID of A << n || ID of B
-2. salt  : SHA_256(NA << n || NB)
+1. input : ID of A << n OR ID of B
+2. salt  : SHA_256(NA << n OR NB)
 3. info  : CA's email address or something commonly known for both the participants or empty
 
 ```bash
