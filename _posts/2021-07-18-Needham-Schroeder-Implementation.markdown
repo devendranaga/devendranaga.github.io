@@ -22,7 +22,7 @@ Here's a brief detail about the protocol:
 
 Problem:
 ========
-1. A and B wants to communicate with each other.
+1. A and B wants to communicate with each other over an insecure channel.
 
 Preconditions:
 ==============
