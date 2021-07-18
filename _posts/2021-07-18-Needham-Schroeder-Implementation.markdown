@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Needham-Schroeder Protoocl Implementation"
+title:  "Learning / PoC implementation of Needham-Schroeder Protocol"
 date:   2021-07-18 07:04:00
 categories: cryptography
 ---
