@@ -73,8 +73,51 @@ So Now there is a way to
 4. Dispatcher that will call Subscribed callbacks - `Dispatcher`.
 
 
+Lets say that if we want to queue a type into the Safequeue, we can do this with the following call. For example, a one line call to store an integer type can be done as follow.
+
+```cpp
+int data = 1;
+
+SafeQueue<int>::Instance()->QueueItem(data);
+```
+
+Now to receive the item, one can simply do,
+
+```cpp
+int sub_id = 1;
+
+SafeQueue<int>::Instance()->Subscribe(sub_id, OnDataReceive);
+
+...
+
+void OnDataReceive(int sub_id, int data)
+{
+    printf("subscriber[%d] received data: %d\n", sub_id, data);
+}
+
+```
+
+The caller of this function will be the `Dispatcher` thread that is instantiated when the first instance of the type is created with `Instance` member. By this call,
+
+```cpp
+instance = SafeQueue<int>::Instance();
+```
+
+this will create a thread for the integer types, since the template code generated at compile time, if there are many types, then there will be many such instances of SafeQueue objects handling each type.
+
+
 The full source is here:
 
+The SafeQueue is implemented in a simple header file here:
+
 <script src="https://gist.github.com/madmax440/7e0f129e810a310e86ea4e4a9d5dc2c6.js"></script>
+
+To test the SafeQueue i created a sample program, containing two threads, one produces values and other consumes. So to validate multi publisher and subscriber, i created two publishers one doing integers counting upwards, and one publishing strings in periodic intervals. There are 6 subscribers for integer publisher and two subscribers for the string publisher.
+
+Remember that the calling order of the subscribers follows the order they were being registered. So if the subscriber need to be called early, it need to be registered earlier.
+
+Since the calling is sequence, the callbacks shouldn't do anymore work than usual, may be the callback should just copy the value and interrupt a thread to process the data. If the callback takes up time, the next callback calls will be delayed thus adding latency. There is no way to resolve this, even not possible with multi-threads or thread-pool based dispatchers.
+
+The sample code test is as follows,
 
 <script src="https://gist.github.com/madmax440/c233a436d449a61008eb87ff26005474.js"></script>
