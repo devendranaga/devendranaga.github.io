@@ -15,6 +15,8 @@ The design is as follows,
 3. A queue to store subscriber callbacks, which will be called later in the program.
 4. support for any types - use of templates
 
+A usecase of this is sensor data processing. A camera / lidar receive thread will listen on the interface and read packets as and when they are received. A processor thread(s) will run on the received data to perform further actions on the data.
+
 The class will then be created the following way, in C++
 
 ```cpp
@@ -81,7 +83,7 @@ int data = 1;
 SafeQueue<int>::Instance()->QueueItem(data);
 ```
 
-Now to receive the item, one can simply do,
+Now to receive the item, one can simply subscribe only once on the data type. The callbacks will be called automatically by the dispatcher.
 
 ```cpp
 int sub_id = 1;
