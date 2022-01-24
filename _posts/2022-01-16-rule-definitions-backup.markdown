@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "defending against port scanners - part 1"
+title:  "rule definitions backup - part 1"
 date:   2022-01-16 01:04:00
 categories: cryptography, network security, c++
 ---
