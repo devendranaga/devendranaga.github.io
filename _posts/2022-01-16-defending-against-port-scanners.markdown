@@ -5,11 +5,17 @@ date:   2022-01-16 01:04:00
 categories: cryptography, network security, c++
 ---
 
-I have been working on a personal IDPS project during the free time for learning and research purposes. This below article is one of the outcomes. The article primarily focuses on defending against the TCP port scanner with SYN usecase.
+Introduction:
+=============
+
+I have been working on a personal IDPS project during the free time for learning and research purposes. This work in progress article is one of the outcomes. The article primarily focuses on defending against the TCP port scanner with SYN usecase.
 
 Port scanners are one of the primary methods to find out open ports on a device that is attached to the network. These open ports further can be used in the process of finding vulnerabilities in the device. Further port scanners would exploit OS specific default configuration parameters for the networking stack and they identify the OS based on these (signatures).
 
 Since port scanners run at L4, generally TCP, UDP and ICMP are used to perform port scanning. Random number of requests are made for every port between 1 and 65535 and the scanner expects a response back, based on the response the port scanner would then determine that a set of services are open.
+
+Port scan detection:
+====================
 
 For example, in case of TCP, the port scanner initiates connection requests with SYN bit set to the server ( in the TCP flags). In general, according to the protocol, if there is no service available, the server would send out a RST (or in some cases RST + ACK). If the server sends out a SYN + ACK (service available), then the scanner understands that service is available.
 
@@ -35,7 +41,7 @@ An IDPS generally will have 3 stages.
 
 Considering the TCP SYN case for port scanning, the below diagram shows 
 
-![Capture_File](https://raw.githubusercontent.com/madmax440/madmax440.github.io/master/_posts/Untitled%20Diagram-TCP%20filtering%20-%201(1).jpg)
+![TCP_decode](https://raw.githubusercontent.com/madmax440/madmax440.github.io/master/_posts/Untitled%20Diagram-TCP%20filtering%20-%201(1).jpg)
 
 1. An incoming packet is parsed by the decoder.
 2. packet is validated for the ipv4 / ipv6 ethertype.
@@ -58,6 +64,9 @@ Port scanner algorithm is as follows.
 5. Valid match, deny the packet.
 6. Packet not matched, match against connection track table. A valid match found, allow packet to the destination. (Legit packet usecase) This can also be further passed down to the connection track algorithm and have it decide if the packet can be allowed.
 
+Below diagram shows the detection process.
+
+![Detection_method](https://raw.githubusercontent.com/madmax440/madmax440.github.io/master/_posts/Untitled%20Diagram-Detection%20of%20Port%20Scanner%20-1(1).jpg)
 
 The above method mainly dependent on the RST+ACK behavior of the OS.
 
@@ -75,8 +84,21 @@ Run the below steps periodically or as and when the packets are being detected.
 For each item in the table,
 
 1. match connection attempts over a threshold of connection attempts (configurable).
-2. match delta_timestamp against a threshold of delta_timestamp between each packet (configurable).
-3. if both 1 and 2 are successful, set port_scan_in_progress. Raise an alert.
+2. match count of denials against configured value.
+3. match delta_timestamp against a threshold of delta_timestamp between each packet (configurable).
+4. if both 1, 2 and 3 are successful, set port_scan_in_progress. Raise an alert.
 
-Sometimes packet scanners might defeat the delta_timestamp thresholds by delaying and spreading the attack over a wide time range.
+In case of unmanaged systems, open ports can be learnt by storing the allowed src_ip, src_port in the open_ports table. This can be further used at the input stage itself, to perform better detection.
 
+Few observations:
+=================
+
+1. Sometimes packet scanners might defeat the delta_timestamp thresholds by delaying and spreading the attack over a wide time range. Future work will append more cases to the port scanning detection algorithm.
+
+2. Problems we might face is the table overflow when attacker runs over many ip addresses, but this can be overcome with having fixed incoming connections and enabling the SYN cookies.
+
+3. Having fixed set of state tables avoids overruns of the available system memory. This shall be determined based on available system memory, size of the network, number of incoming requests and so on.
+
+It is always better to temporarily deny the incoming src_ip and src_port. It could be because a compromised network hardware could also been a potential port scanner. At this moment i have not yet figured the technique to unblock the sender. It can either be configurable, or could be presented to the system admin and have them unblock manually after further analysis.
+
+The code for this technique will be published sooner..
