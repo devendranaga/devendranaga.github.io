@@ -60,7 +60,7 @@ The TCP SYN based Port scanner defense algorithm is as follows.
 
 1. If TCP header contains SYN, match against open ports table. (described later section)
 2. if packet not matched aganist open ports, create a new temporary entry with src_ip, src_port, dst_ip, dst_port in a table. Allow the packet to the target.
-3. Wait for any response back from the server that contain RST + ACK for the original packet. Match against the stored entry (server_pkt.dst_ip == stored_entry.src_ip && server_pkt.dst_port == stored_entry.src_port && servere_pkt.ack_no == stored_entry.seq_no).
+3. Wait for any response back from the server that contain RST + ACK for the original packet. Match against the stored entry (`server_pkt.dst_ip == stored_entry.src_ip && server_pkt.dst_port == stored_entry.src_port && servere_pkt.ack_no == stored_entry.seq_no`).
 5. Valid match, deny the packet.
 6. Packet not matched, match against connection track table. A valid match found, allow packet to the destination. (Legit packet usecase) This can also be further passed down to the connection track algorithm and have it decide if the packet can be allowed.
 
