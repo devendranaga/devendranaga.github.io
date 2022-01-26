@@ -14,6 +14,7 @@ Port scanners are one of the primary methods to find out open ports on a device 
 
 Since port scanners run at L4, generally TCP, UDP and ICMP are used to perform port scanning. Random number of requests are made for every port between 1 and 65535 and the scanner expects a response back, based on the response the port scanner would then determine that a set of services are open.
 
+
 Port scan detection:
 ====================
 
@@ -101,7 +102,7 @@ Few observations:
 
 4. Having fixed set of state tables avoids overruns of the available system memory. This shall be determined based on available system memory, size of the network, number of incoming requests and so on.
 
-5. It is almost always possible that the port scanner could defeat the algorithm ( by scanning at port 22, 80, 443 for example), however, this can be prevented in the middle of the detection with configurable connection attempts and count of denials.
+5. It is almost always possible that the port scanner could defeat the algorithm ( by scanning at port 22, 80, 443 for example), however, this can be prevented  at the middle of attack with configurable connection attempts and count of denials.
 
 
 It is always better to temporarily deny the __offending__ src_ip and src_port. It could be because a compromised network hardware could also been a potential port scanner. At this moment i have not yet figured the technique to unblock the sender. It can either be configurable, or could be presented to the system admin and have them unblock manually after further analysis.
