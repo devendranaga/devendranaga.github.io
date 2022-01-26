@@ -33,13 +33,13 @@ An IDPS generally will have 3 stages.
 2. filtering
 3. reporting / alerts / events
 
--> Parsing involve decoding packets, uncovering all the layers upto the application.
+1.) Parsing involve decoding packets, uncovering all the layers upto the application.
 
--> Filtering involve a task of handling filters at each layer. Filters are applied on the set of rules to match incoming packet. Sometimes, identifiers in the packets are then used to track the state of the connection / communication. (Connection tracking)
+2.) Filtering involve a task of handling filters at each layer. Filters are applied on the set of rules to match incoming packet. Sometimes, identifiers in the packets are then used to track the state of the connection / communication. (Connection tracking)
 
--> reporting / alerts / events are generated as the output of the filter. Events are formatted in a way / representation for monitoring and further analysis.
+3.) reporting / alerts / events are generated as the output of the filter. Events are formatted in a way / representation for monitoring and further analysis.
 
-Considering the TCP SYN case for port scanning, the below diagram shows 
+Considering the TCP SYN case for port scanning, the below diagram shows (zoom into the picture for high quality flow chart) the high level flow of sequence.
 
 ![TCP_decode](https://raw.githubusercontent.com/madmax440/madmax440.github.io/master/_posts/Untitled%20Diagram-TCP%20filtering%20-%201(1).jpg)
 
@@ -64,7 +64,7 @@ Port scanner algorithm is as follows.
 5. Valid match, deny the packet.
 6. Packet not matched, match against connection track table. A valid match found, allow packet to the destination. (Legit packet usecase) This can also be further passed down to the connection track algorithm and have it decide if the packet can be allowed.
 
-Below diagram shows the detection process.
+Below diagram shows the detection process. (zoom in to the picture for high quality flow chart)
 
 ![Detection_method](https://raw.githubusercontent.com/madmax440/madmax440.github.io/master/_posts/Untitled%20Diagram-Detection%20of%20Port%20Scanner%20-1(1).jpg)
 
