@@ -28,5 +28,24 @@ An IDPS generally will have 3 stages.
 3. reporting / alerts / events
 
 -> Parsing involve decoding packets, uncovering all the layers upto the application.
+
 -> Filtering involve a task of handling filters at each layer. Filters are applied on the set of rules to match incoming packet. Sometimes, identifiers in the packets are then used to track the state of the connection / communication. (Connection tracking)
+
 -> reporting / alerts / events are generated as the output of the filter. Events are formatted in a way / representation for monitoring and further analysis.
+
+Considering the TCP SYN case for port scanning, the below diagram shows 
+
+![Capture_File](https://raw.githubusercontent.com/madmax440/madmax440.github.io/master/_posts/Screenshot%20from%202022-01-26%2004-33-07.png)
+
+1. An incoming packet is parsed by the decoder.
+2. packet is validated for the ipv4 / ipv6 ethertype.
+3. ipv4 / ipv6 headers are parsed. validated for consistency (checksum, header fields etc)
+4. validate if ipv4.protocol == TCP or ipv6.next_header == TCP.
+5. perform TCP header decode. validate for consistency (checksum, header fields etc)
+6. if checksum is valid, perform the packet filtering for TCP.
+
+
+![Capture_File](https://raw.githubusercontent.com/madmax440/madmax440.github.io/master/_posts/Untitled%20Diagram-TCP%20filtering%20-%201(1).jpg)
+
+At each stage, if the packet checks fail, the packet is dropped and an alert is generated with corresponding failure.
+
