@@ -54,9 +54,9 @@ Considering the TCP SYN case for port scanning, the below diagram shows (zoom in
 
 At each stage, if the packet checks fail, the packet is dropped and an alert is generated with corresponding failure.
 
-We run the port scan detection before we run the TCP connection tracking algorithm.
+We run the port scan detection before we run the TCP connection tracking algorithm. This is mainly to avoid polluting the connection tracking tables and give enough space for tracking real hosts.
 
-Port scanner algorithm is as follows.
+The TCP SYN based Port scanner defense algorithm is as follows.
 
 1. If TCP header contains SYN, match against open ports table. (described later section)
 2. if packet not matched aganist open ports, create a new temporary entry with src_ip, src_port, dst_ip, dst_port in a table. Allow the packet to the target.
@@ -95,10 +95,11 @@ Few observations:
 
 1. Sometimes packet scanners might defeat the delta_timestamp thresholds by delaying and spreading the attack over a wide time range. Future work will append more cases to the port scanning detection algorithm.
 
-2. Problems we might face is the table overflow when attacker runs over many ip addresses, but this can be overcome with having fixed incoming connections and enabling the SYN cookies.
+2. Another Problem is the table overflow when attacker runs over many ip addresses, but this can be overcome with having fixed incoming connections and enabling the SYN cookies.
 
 3. Having fixed set of state tables avoids overruns of the available system memory. This shall be determined based on available system memory, size of the network, number of incoming requests and so on.
 
-It is always better to temporarily deny the incoming src_ip and src_port. It could be because a compromised network hardware could also been a potential port scanner. At this moment i have not yet figured the technique to unblock the sender. It can either be configurable, or could be presented to the system admin and have them unblock manually after further analysis.
+
+It is always better to temporarily deny the __offending__ src_ip and src_port. It could be because a compromised network hardware could also been a potential port scanner. At this moment i have not yet figured the technique to unblock the sender. It can either be configurable, or could be presented to the system admin and have them unblock manually after further analysis.
 
 The code for this technique will be published sooner..
