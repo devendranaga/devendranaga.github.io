@@ -35,7 +35,7 @@ An IDPS generally will have 3 stages.
 
 Considering the TCP SYN case for port scanning, the below diagram shows 
 
-![Capture_File](https://raw.githubusercontent.com/madmax440/madmax440.github.io/master/_posts/Screenshot%20from%202022-01-26%2004-33-07.png)
+![Capture_File](https://raw.githubusercontent.com/madmax440/madmax440.github.io/master/_posts/Untitled%20Diagram-TCP%20filtering%20-%201(1).jpg)
 
 1. An incoming packet is parsed by the decoder.
 2. packet is validated for the ipv4 / ipv6 ethertype.
@@ -45,7 +45,6 @@ Considering the TCP SYN case for port scanning, the below diagram shows
 6. if checksum is valid, perform the packet filtering for TCP.
 
 
-![Capture_File](https://raw.githubusercontent.com/madmax440/madmax440.github.io/master/_posts/Untitled%20Diagram-TCP%20filtering%20-%201(1).jpg)
 
 At each stage, if the packet checks fail, the packet is dropped and an alert is generated with corresponding failure.
 
