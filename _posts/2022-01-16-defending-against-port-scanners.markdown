@@ -21,4 +21,12 @@ See that in the above capture file, the SYN bit is set in the flags from `192.16
 
 This is one example, but there are many otherways to identifying open TCP ports. For now, lets look at how this can be prevented for the SYN usecase.
 
+An IDPS generally will have 3 stages.
 
+1. parsing
+2. filtering
+3. reporting / alerts / events
+
+-> Parsing involve decoding packets, uncovering all the layers upto the application.
+-> Filtering involve a task of handling filters at each layer. Filters are applied on the set of rules to match incoming packet. Sometimes, identifiers in the packets are then used to track the state of the connection / communication. (Connection tracking)
+-> reporting / alerts / events are generated as the output of the filter. Events are formatted in a way / representation for monitoring and further analysis.
