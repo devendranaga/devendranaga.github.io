@@ -62,7 +62,7 @@ The TCP SYN based Port scanner defense algorithm is as follows.
 2. if packet not matched aganist open ports, create a new temporary entry with src_ip, src_port, dst_ip, dst_port in a table. Allow the packet to the target.
 3. Wait for any response back from the server that contain RST + ACK for the original packet. Match against the stored entry (`server_pkt.dst_ip == stored_entry.src_ip && server_pkt.dst_port == stored_entry.src_port && servere_pkt.ack_no == stored_entry.seq_no`).
 5. Valid match, deny the packet.
-6. Packet not matched, match against connection track table. A valid match found, allow packet to the destination. (Legit packet usecase) This can also be further passed down to the connection track algorithm and have it decide if the packet can be allowed.
+6. If the Packet not matched, match it against the connection track table. A valid match found, allow packet to the destination. (Legit packet usecase) This can also be further passed down to the connection track algorithm and have it decide if the packet can be allowed.
 
 Below diagram shows the detection process. (zoom in to the picture for high quality flow chart)
 
@@ -73,7 +73,7 @@ The above method mainly dependent on the RST+ACK behavior of the OS.
 Once the packet is denied, store the following information about the packet.
 
 1. src_ip
-2. src_port
+2. range of src_ports
 3. count of denials
 4. connection attempts
 5. average delta time between packets from the sender
@@ -84,7 +84,7 @@ Run the below steps periodically or as and when the packets are being detected.
 For each item in the table,
 
 1. match connection attempts over a threshold of connection attempts (configurable).
-2. match count of denials against configured value.
+2. match count of denials against configured value. (number of RST + ACK)
 3. match delta_timestamp against a threshold of delta_timestamp between each packet (configurable).
 4. if both 1, 2 and 3 are successful, set port_scan_in_progress. Raise an alert.
 
@@ -95,9 +95,13 @@ Few observations:
 
 1. Sometimes packet scanners might defeat the delta_timestamp thresholds by delaying and spreading the attack over a wide time range. Future work will append more cases to the port scanning detection algorithm.
 
-2. Another Problem is the table overflow when attacker runs over many ip addresses, but this can be overcome with having fixed incoming connections and enabling the SYN cookies.
+2. Futher more, a timestamp can be created for each SYN entry for the particular IP. It is then compared against a SYN timeout value (either configured, or being learnt via average 3-way handshake timeout for any / all connections for this server). Upon a  timeout, the sender can then be blocked, indicating either a case of DoS or being Port Scanned. Further prediction of DoS or Port Scan can then be figured by using the `connection attempts` and  `src_ports` entries. (SYN count from a particular port against SYN for each port. DoS generally targetted at available port, port scan is being run over a range of ports).
 
-3. Having fixed set of state tables avoids overruns of the available system memory. This shall be determined based on available system memory, size of the network, number of incoming requests and so on.
+3. Another Problem is the table overflow when attacker runs over many ip addresses, but this can be overcome with having fixed incoming connections and enabling the SYN cookies.
+
+4. Having fixed set of state tables avoids overruns of the available system memory. This shall be determined based on available system memory, size of the network, number of incoming requests and so on.
+
+5. It is almost always possible that the port scanner could defeat the algorithm ( by scanning at port 22, 80, 443 for example), however, this can be prevented in the middle of the detection with configurable connection attempts and count of denials.
 
 
 It is always better to temporarily deny the __offending__ src_ip and src_port. It could be because a compromised network hardware could also been a potential port scanner. At this moment i have not yet figured the technique to unblock the sender. It can either be configurable, or could be presented to the system admin and have them unblock manually after further analysis.
