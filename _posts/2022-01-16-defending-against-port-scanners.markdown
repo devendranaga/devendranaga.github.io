@@ -5,43 +5,18 @@ date:   2022-01-16 01:04:00
 categories: cryptography, network security, c++
 ---
 
-Few rules:
-==========
+I have been working on a personal IDPS project during the free time for learning and research purposes. This below article is one of the outcomes. The article primarily focuses on the TCP port scanner with SYN usecase.
 
-### TCP based port scan defense:
+Port scanners are one of the primary methods to find out open ports on a device that is attached to the network. These open ports further can be used in the process of finding vulnerabilities in the device. Further port scanners would exploit OS specific default configuration parameters for the networking stack and they identify the OS based on these (signatures).
 
-if the originating syn packets are from the same host, then follow this method. However, the table building can be done in either case. (same or diferent host)
+Since port scanners run at L4, generally TCP, UDP and ICMP are used to perform port scanning. Random number of requests are made for every port between 1 and 65535 and the scanner expects a response back, based on the response the port scanner would then determine that a set of services are open.
 
-#### detection:
+For example, in case of TCP, the port scanner initiates connection requests with SYN bit set to the server ( in the TCP flags). In general, according to the protocol, if there is no service available, the server would send out a RST (or in some cases RST + ACK). If the server sends out a SYN + ACK (service available), then the scanner understands that service is available.
 
-1. rate of pkts/sec from a given ip address cross a particular threshold.
-2. condition 1, the host trying to connect to the server on various ports.
-   1. match incoming port against the list of allowed ports on the server.
-   2. if all ports are allowed (aka firewall not configured correctly), try to learn if there is RST from the server back.
-   3. if server responds with an RST, make a state table about the list of the ports that are not open in the server.
-   4. upon any new packet entry, match the packet against the learnt table and deny there itself.
-4. more than x number of syn timeouts from the host.
+For example a series of SYN and RST are shown below.
 
-#### prevention:
+See that in the above capture file, the SYN bit is set in the flags from `192.168.75.1` (scanner) to target `192.168.75.132`. The response shows a RST + ACK, meaning the unavailability of the service.
 
-1. raise events to the administrator via different interfaces (logging, ui front end via mqtt etc)
-2. blacklist host
+This is one example, but there are many otherways to identifying open TCP ports. For now, lets look at how this can be prevented for the SYN usecase.
 
 
-if the originating syn packets are from various ip addresses, then follow this method.
-
-1. limit number of incoming connections towards the server.
-2. let the server enable syn cookies (not in control of the idps).
-
-### UDP based port scan defense:
-
-#### detection:
-
-1. follow rate of pkts/sec logic stated in the tcp based defense.
-2. detect the directed broadcast address on ipv4 destination. if present, deny the packet. (based on the class of the network we are in)
-3. if the firewall rules set to allow specific udp ports - use it to deny early stage.
-4. if it doesn't
-    1. watch for icmp responses from the server with code destination unreachable.
-    2. for every destination unreachable build a table.
-    3. a new packet matching to that port comes in, deny it immediately
-5. method 3 will not however, eliminate an active attack, however creates a cache for future fool proof attacks.
