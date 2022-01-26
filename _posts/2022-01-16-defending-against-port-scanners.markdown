@@ -48,3 +48,35 @@ Considering the TCP SYN case for port scanning, the below diagram shows
 
 At each stage, if the packet checks fail, the packet is dropped and an alert is generated with corresponding failure.
 
+We run the port scan detection before we run the TCP connection tracking algorithm.
+
+Port scanner algorithm is as follows.
+
+1. If TCP header contains SYN, match against open ports table. (described later section)
+2. if packet not matched aganist open ports, create a new temporary entry with src_ip, src_port, dst_ip, dst_port in a table. Allow the packet to the target.
+3. Wait for any response back from the server that contain RST + ACK for the original packet. Match against the stored entry (server_pkt.dst_ip == stored_entry.src_ip && server_pkt.dst_port == stored_entry.src_port && servere_pkt.ack_no == stored_entry.seq_no).
+5. Valid match, deny the packet.
+6. Packet not matched, match against connection track table. A valid match found, allow packet to the destination. (Legit packet usecase) This can also be further passed down to the connection track algorithm and have it decide if the packet can be allowed.
+
+
+The above method mainly dependent on the RST+ACK behavior of the OS.
+
+Once the packet is denied, store the following information about the packet.
+
+1. src_ip
+2. src_port
+3. count of denials
+4. connection attempts
+5. average delta time between packets from the sender
+6. port_scan_in_progress to false 
+
+Run the below steps periodically or as and when the packets are being detected.
+
+For each item in the table,
+
+1. match connection attempts over a threshold of connection attempts (configurable).
+2. match delta_timestamp against a threshold of delta_timestamp between each packet (configurable).
+3. if both 1 and 2 are successful, set port_scan_in_progress. Raise an alert.
+
+Sometimes packet scanners might defeat the delta_timestamp thresholds by delaying and spreading the attack over a wide time range.
+
