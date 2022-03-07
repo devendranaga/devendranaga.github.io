@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Poly1305-aes in openssl 3.0"
-date:   2020-02-21 23:26:00
+date:   2022-03-07 23:26:00
 categories: technology,cryptography, c, yocto,
 ---
 
@@ -27,7 +27,7 @@ The new API interfaces are bit daunting for the first time, but here they are:
 
 Below are the steps:
 
-1. Get Mac Context -> `mac = EVP_MAC_fetch(NULL, "poly1305", NULL);
+1. Get Mac Context -> `mac = EVP_MAC_fetch(NULL, "poly1305", NULL);`
 2. Create new MAC Context -> `EVP_MAC_CTX_new(mac);`
 3. Initialize MAC -> `EVP_MAC_init(ctx, key, sizeof(key), params)`
    1. setting parameters:
