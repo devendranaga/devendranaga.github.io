@@ -8,7 +8,7 @@ categories: wireless, linux, programming
 Below are the steps to build and flash Yocto on an emmc.
 
 
-**Build**
+## Build
 
 ```bash
 mkdir yocto-bbb/
@@ -41,7 +41,7 @@ core-image-minimal-beaglebone-yocto.jffs2                                       
 
 ```
 
-**Prepping the SDCARD**
+## Prepping the SDCARD
 
 What we need is MLO, U-boot and the rootfs.tar.gz2 files to be on the SDCARD.
 
@@ -68,7 +68,7 @@ sync
 once done ,remove the SDCARD and put it in the sd slot of the Beaglebone Black.
 
 
-**Serial port:**
+## Serial port:
 
 There is J1 header with 6 pins available on the Beaglebone Black. From the Ethernet jack side, count it from 1. 
 
@@ -78,7 +78,7 @@ There is J1 header with 6 pins available on the Beaglebone Black. From the Ether
 
 use `minicom` Set baud 115200, select `/dev/ttyUSB0`.
 
-**Boot with SD:**
+## Boot with SD:
 
 there is a button beside the slot area, called "S2". Hold it while the device is being plugged in to power. Holding S2 wil make the boot from the SDCARD.
 
