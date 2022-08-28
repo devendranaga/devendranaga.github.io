@@ -70,11 +70,11 @@ once done ,remove the SDCARD and put it in the sd slot of the Beaglebone Black.
 
 **Serial port:**
 
-There is J1 header 6 pin available on the Beaglebone Black. From the Ethernet jack side, count it from 1. 
+There is J1 header with 6 pins available on the Beaglebone Black. From the Ethernet jack side, count it from 1. 
 
-pin 1 - black wire on FTDI cable - GND
-pin 4 - green wire on FTDI cable - RX
-pin 5 - white wire on FTDI cable - TX
+1. pin 1 - black wire on FTDI cable - GND
+2. pin 4 - green wire on FTDI cable - RX
+3. pin 5 - white wire on FTDI cable - TX
 
 use `minicom` Set baud 115200, select `/dev/ttyUSB0`.
 
