@@ -1,8 +1,8 @@
 # Site settings
-title: An Engineer's Webpage
-email: devendra.aaru@gmail.com
+title: Dev's Software Engineering Blog posts
+email: --
 description: # this means to ignore newlines until "baseurl:"
-    I am DevNaga, a programmer, gamer and an introvert.
+    I am Devendra Naga (programmer, gamer and an introvert).
 
 url: "https://devnaga.github.io" # the base hostname & protocol for your site
 twitter_username: ""
