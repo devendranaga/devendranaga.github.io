@@ -58,7 +58,7 @@ Below is the diagram that shows the sequence of steps involved.
 
 
 
-![NS_Protocol](https://raw.githubusercontent.com/DevNaga/devnaga.github.io/master/_posts/NS_protocol.jpg)
+![NS_Protocol](https://raw.githubusercontent.com/devendranaga/devendranaga.github.io/master/_posts/NS_protocol.jpg)
 
 The C++ implementation of the protocol below simulates A, B and S as functions within a single program. In realitiy they are tasks or services in each machine, device running and communicating over the insecured channel.
 
