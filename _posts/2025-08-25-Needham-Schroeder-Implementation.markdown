@@ -15,7 +15,7 @@ I  have put a diagram of the public key based implementation of the protocol bel
 
 A full fledged implementation of the protocol can be done with a proper statemachine with the assumptions of few preconditions.
 
-Well there are little usecases for this protocol, there is not a big need of CAs in a small scale systems with untrusted devices. Examples: Automotive distributed networks.
+The primary usecase of this protocol is for key distribution using public key. Though the more advanced protocols are available now, such as TLS, DTLS, this protocol solves a basic need of secure key distribution.
 
 The protocol details are as follows:
 
