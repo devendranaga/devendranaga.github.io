@@ -1,24 +1,21 @@
 ---
 layout: post
-title:  "Learning / PoC implementation of Needham-Schroeder Protocol"
+title:  "Implementation of the Needham-Schroeder Protocol"
 date:   2025-08-25 07:04:00
 categories: cryptography
 ---
 
-Recently i have come cross the Needham-Schroeder protocol. So thought of implementing it in C++ following the public key version of the protocol over this weekend.
+I have come cross the Needham-Schroeder protocol for key exchange. So thought of implementing it in C++ following the public key version of the protocol over this weekend.
 
 The protocol details can be found from wikipedia [here](https://en.wikipedia.org/wiki/Needham%E2%80%93Schroeder_protocol).
 
 As described above, the protocol is intended for communication over an insecure network. Few of the current systems use it as their backbone for communication.
 
-I  have put a diagram of the public key based implementation of the protocol below. It took me 2 hours to implement and validate the version of the protocol.
+I  have put a diagram of the public key based implementation of the protocol below.
 
-TL;DR, this is not a nice implementation of Needham-Schoreder protocol. But it is only used for learning and understanding the protocol itself. Look for the github link on the implementation code.
+A full fledged implementation of the protocol can be done with a proper statemachine with the assumptions of few preconditions.
 
-A full fledged implementation of the protocol can be done with a proper statemachine with the assumptions of few preconditions. This is for future works.
-
-
-Here's a brief detail about the protocol:
+The protocol details are as follows:
 
 Problem:
 ========
@@ -26,8 +23,9 @@ Problem:
 
 Preconditions:
 ==============
-1. A and B knows each of their identities beforehand (somehow, either pre-provisioned via application etc). In case of embedded systems this can simply be a unique idenitier that is programmed during manufacturing. In other cases, A might know B via some means (DNS query for example).
+1. A and B knows each of their identities beforehand (somehow,  pre-provisioned). In case of embedded systems this can simply be a unique idenitier that is programmed during manufacturing. In other cases, A might know B via some means (DNS query for example).
 2. A and B both knows S, server public keys and they have shared with the server their public keys as  well.
+3. Let us assume the S is trusted.
 
 Protocol:
 =========
@@ -58,19 +56,18 @@ Below is the diagram that shows the sequence of steps involved.
 
 
 
-![NS_Protocol](https://raw.githubusercontent.com/devendranaga/devendranaga.github.io/blob/master/_posts/NS_protocol.jpg)
+![NS_Protocol](https://raw.githubusercontent.com/devendranaga/devendranaga.github.io/master/_posts/NS_protocol.jpg)
 
 The C++ implementation of the protocol below simulates A, B and S as functions within a single program. In realitiy they are tasks or services in each machine, device running and communicating over the insecured channel.
 
-For Public key implementations, we use RSA for signing and encryption. We sign with Private key and verify with Public keys. We encrypt with Public key and decrypt with Private Key. We use RSA key length of 2048 for learning purposes. For realworld uses 3072 key lengths are better.
+For Public key implementations, we use RSA for signing and encryption. We sign with Private key and verify with Public keys. We encrypt with Public key and decrypt with Private Key. We use RSA key length of 2048 for learning purposes. For realworld uses 4096 bit key lengths are better.
 
 HKDF derivation of the final keys is not shown in the implementation.
 
-
-
 An example output of the implementation is as follow:
 
-```bash
+Below are the high level steps:
+
 main:	 setup communication
 
 step1:
@@ -134,16 +131,12 @@ bob:	 decrypt alice msg ok
 bob:	 **** alice is verified ok ****
 main:	 mutual verification complete
 
-```
-
 A C++ implementation of the protocol is below.
 
-<script src="https://gist.github.com/madmax440/61964cf4fc9a2c676b3430b1ba43a0f3.js"></script>
+NS Protocol C Source: <script src="https://gist.github.com/devendranaga/61964cf4fc9a2c676b3430b1ba43a0f3.js"></script>
 
+NS Protocol H Source: <script src="https://gist.github.com/devendranaga/0b3a81c82d2c2bb37be70ab42c09f62d.js"></script>
 
-<script src="https://gist.github.com/madmax440/0b3a81c82d2c2bb37be70ab42c09f62d.js"></script>
-
-
-<script src="https://gist.github.com/madmax440/c063a0f1165fb85fa17aa43bf64f2912.js"></script>
+NS Protocol CMakeFile Source: <script src="https://gist.github.com/devendranaga/c063a0f1165fb85fa17aa43bf64f2912.js"></script>
 
 
