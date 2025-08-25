@@ -75,62 +75,84 @@ main:	 setup communication
 step1:
 ======
 alice:	 initiate communication
+
 alice:	 send uid 0x12345678 bob uid 0x12345688 to server A->S: A, B
 
 
 step2:
 ======
 server:	 prepare response
+
 server:	 read bob's public key
+
 server:	 copy bob's key
+
 server:	 send response to A, S -> A {KPB, B}KSS
 
 
 step3:
 =====
 alice:	 send first message to bob
+
 alice:	 server signature verified.. extract bob's key
+
 alice:	 set nonce and alice uid
+
 alice:	 encrypted ok 256 A -> B: {NA, A}KPB
 
 
 step4:
 =====
 bob:	 received alice request
+
 bob:	 set bob_uid 0x12345688 alice_uid 0x12345678 B->S: {B, A}
+
 bob:	 request server about alice identity
 
 
 step5:
 =====
 server:	 load alice public key
+
 server:	 copy alice public key
+
 server:	 copy alice uid
+
 server:	 signed ok S -> B: {KPA, A}KSS
+
 server:	 respond to bob with KPA, A signed with server priv key
 
 
 step6:
 =====
 bob:	 verified server message ok
+
 bob:	 try to verify alice len 20
+
 bob:	 encrypt {NA,NB}KPA
+
 bob:	 sends {NA, NB}KPA to alice
 
 
 step7:
 =====
 alice:	 decrypt bob's msg ok
+
 alice:	 **** bob is verified ok **** 
+
 alice:	 b_nonce verified ok
+
 alice:	 encrypt ok A -> B {NB}KPB
+
 alice:	 sends {NB}KPB to bob
 
 
 step8:
 =====
 bob:	 decrypt alice msg ok
+
 bob:	 **** alice is verified ok ****
+
 main:	 mutual verification complete
 
 A C++ implementation of the protocol is below.
