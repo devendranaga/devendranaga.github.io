@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Learning / PoC implementation of Needham-Schroeder Protocol"
-date:   2021-07-18 07:04:00
+date:   2025-08-25 07:04:00
 categories: cryptography
 ---
 
