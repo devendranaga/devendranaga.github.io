@@ -20,4 +20,4 @@ GND pin should go to GND on the breakout. No need to supply power so VCC is not 
 
 Set baudrate 115200 , 8N1 on minicom. With this, the console is accessible.
 
-![image](_posts/IMG-3881.jpg)
+![image](https://raw.githubusercontent.com/devendranaga/devendranaga.github.io/master/_posts/IMG-3881.jpg)
