@@ -9,11 +9,13 @@ I have come cross the Needham-Schroeder protocol for key exchange. So thought of
 
 The protocol details can be found from wikipedia [here](https://en.wikipedia.org/wiki/Needham%E2%80%93Schroeder_protocol).
 
-As described above, the protocol is intended for communication over an insecure network. Few of the current systems use it as their backbone for communication.
+As described above, the protocol is intended for communication over an insecure network.
 
 I  have put a diagram of the public key based implementation of the protocol below.
 
 A full fledged implementation of the protocol can be done with a proper statemachine with the assumptions of few preconditions.
+
+Well there are little usecases for this protocol, there is not a big need of CAs in a small scale systems with untrusted devices. Examples: Automotive distributed networks.
 
 The protocol details are as follows:
 
