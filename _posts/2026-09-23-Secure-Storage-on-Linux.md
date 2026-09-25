@@ -29,16 +29,30 @@ categories: cryptography
 
 ## Design
 
+### Startup
+
+The startup would involve the secure storage service initializing the command line and enter into console mode.
+The user will add in the password via the console and the daemon starts up in the background.
+
+The daemon startup would involve,
+
+1. Generating the `KEK` and `KSIK` based on the user provided password as explained in the below section.
+2. Integrity check on the key storage using the KSIK. Both Main and Backup.
+3. If either storage integrity is failed, the secure storage service will attempt to restore the corrupted storage from the backup.
+4. If the backup is also corrupted, the service will log error and halt.
+
 ### Key Hierarchy
 
-KEK is the key encryption key.
-KSIK is Key store integrity key.
+KEK is the key encryption key. Wraps the key store wrapping key.
+KSIK is Key store integrity key. Performs integrity check and generates integrity over the key store.
 
 The salt is varied so the output keys are unique.
 
-1. password is given via the command line argument.
-2. Derive RKEK: `KEK = PBKDF(password, salt, key_len, hash);`.
-3. Derive KSIK: `KSIK = PBKDF(password, salt, key_len, hash);`.
+1. Derive RKEK: `KEK = PBKDF(password, salt, key_len, hash);`.
+2. Derive KSIK: `KSIK = PBKDF(password, salt, key_len, hash);`.
+3. Generate a unique random master key. Wrap this key with the KEK.
+4. Store the unique random master key in two key slots within the key storage.
+5. The unique random master key will then be used as a wrapping key for other keys within the secure storage.
 
 ### Key storage format
 
@@ -46,9 +60,9 @@ The salt is varied so the output keys are unique.
 |---------------------------|
 |      Key store metadata   |
 |---------------------------|
-|      Wrapped Key data 1   |
+|      Wrapped Key data 1   | <-- master wrapping key
 |---------------------------|
-|      Wrapped Key data 2   |
+|      Wrapped Key data 2   | <-- master wrapping key replica
 |---------------------------|
 |             .             |
 |             .             |
@@ -64,7 +78,15 @@ Two types of key storage are required. Main and Backup.
 Backup storage replicates the Main storage. Main storage contains a list of wrapped keys and key metadata.
 Storage MAC would protect the integrity of the entire keys. If any wrapped key has been altered indirectly, the secure storage can flag this and restore it from the backup. If the backup integrity is not verified, the Secure Storage flags this event over syslog.
 
+Storage MAC is calculated over the key store metadata and the entire wrapped key data to ensure the integrity of the key store.
+
+Keys and wrapped and unwrapped using `AES_KeyWrapPadding` and `AES_KeyUnwrapPadding` algorithm. The IV is kept as a constant as per the standard with 0xA6 repeated 8 times padded with 4 bytes of 0s.
+
+Every key wrap operation involve zeroing out the key buffer after the operation is complete.
+
 **Key store metadata**:
+
+A sample of how the key metadata looks like as follows.
 
 ```c
 typedef struct {
@@ -72,21 +94,32 @@ typedef struct {
     uint32_t version;
     uint32_t creation_time_sec;
     uint32_t creation_time_usec;
+    uint8_t  salt[32];
+    uint32_t kdf_iterations;
+    uint32_t n_wrapped_keys;
 } ss_key_metadata_t;
 ```
 
 **Wrapped Symmetric key structure**:
 
+Wrapped key data is either a `ss_wrapped_symm_key_t` or `ss_wrapped_asymm_key_t`.
+The `key_type` will help knowing the type of the wrapped key. Based on that the rest of the data structure can be known during the load time.
+
 ```c
-#define SS_KEY_USE_AES_GCM  0x00000001
-#define SS_KEY_USE_AES_CMAC 0x00000002
-#define SS_KEY_USE_AES_WRAP 0x00000004
+#define SS_KEY_USE_AES_GCM               0x00000001
+#define SS_KEY_USE_AES_CMAC              0x00000002
+#define SS_KEY_USE_AES_WRAP              0x00000004
+#define SS_KEY_USE_RSA_PUB_ENCRYPT       0x00000008
+#define SS_KEY_USE_RSA_PRIV_DECRYPT      0x00000010
+#define SS_KEY_USE_RSA_PRIV_SIGN         0x00000020
+#define SS_KEY_USE_RSA_PUB_VERIFY        0x00000040
 
 typedef struct {
     uint32_t  key_type; // type of symmetric key
+    uint8_t   key_id[32]; // unique id for this wrapped key
     uint32_t  usage; // usage of this key
-    uint8_t   key[40]; // wrapped key data
     uint32_t  key_len; // 16, 24 or 32
+    uint8_t   key[1]; // wrapped key data
 } ss_wrapped_symm_key_t;
 
 typedef struct {
@@ -99,10 +132,13 @@ typedef struct {
 
 typedef struct {
     uint32_t key_type; // type of asymmetric key
+    uint8_t  key_id[32]; // unique id for this wrapped key
     ss_wrapped_asymm_key_t pub_key;
     ss_wrapped_asymm_key_t priv_key;
 } ss_wrapped_asymm_key_t;
 ```
+
+The `key_id` is uniquely generated for each store request. It is generated via the random number generator such as `/dev/unrandom`.
 
 ### Interface format
 
